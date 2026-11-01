@@ -1,0 +1,22 @@
+{
+  "schema": "gamebot-parallel-fork-check/1",
+  "pass": true,
+  "snapshotExportAndForkMs": 7342.3262,
+  "snapshotBytes": 671088640,
+  "distinctWorkerPids": true,
+  "distinctRunDirectories": true,
+  "leftStartMatchesSnapshot": true,
+  "rightStartMatchesSnapshot": true,
+  "crossProcessReplayMatched": true,
+  "fileBackedRestoreMs": 405.70800000000054,
+  "fileBackedRestoreMatchesSnapshot": true,
+  "leftBranchReplayMatched": true,
+  "rightBranchStayedIndependent": true,
+  "branchFrames": {
+    "left": 30,
+    "right": 30
+  },
+  "exportedSnapshotRemovedOnDrop": true,
+  "branchSnapshotSurvivedSourceDrop": true,
+  "branchSnapshotFilesCleaned": true
+}

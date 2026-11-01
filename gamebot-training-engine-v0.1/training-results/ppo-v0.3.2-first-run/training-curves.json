@@ -1,0 +1,233 @@
+{
+  "metadata": {
+    "schema": "gamebot-ppo-pilot/1",
+    "createdAt": "2026-11-01T04:04:25.651Z",
+    "actionRepeat": 4,
+    "maxStepsPerEpisode": 600,
+    "trainingSeeds": [
+      "3JY1 6FLR",
+      "7W3L P1Z9",
+      "SWGF G7WV"
+    ],
+    "heldOutTestSeeds": [
+      "WE4Y Y4DM",
+      "F2HZ 6ZVD"
+    ],
+    "heldOutTestScenes": [
+      "gurdyJr",
+      "larryJr",
+      "dukeOfFlies",
+      "theBloat"
+    ],
+    "curriculum": [
+      {
+        "id": "01_stationary_aim_proxy",
+        "label": "静止目标瞄准近似",
+        "scene": "gurdyJr"
+      },
+      {
+        "id": "02_moving_target",
+        "label": "移动目标瞄准",
+        "scene": "larryJr"
+      },
+      {
+        "id": "03_projectile_dodge",
+        "label": "弹幕躲避",
+        "scene": "theBloat"
+      },
+      {
+        "id": "04_multi_enemy",
+        "label": "多敌人组合",
+        "scene": "dukeOfFlies"
+      },
+      {
+        "id": "05_boss",
+        "label": "Boss 战斗",
+        "scene": "auto"
+      },
+      {
+        "id": "06_mixed",
+        "label": "混合场景",
+        "scene": "auto"
+      }
+    ],
+    "actionSpace": {
+      "move": [
+        "none",
+        "up",
+        "up_right",
+        "right",
+        "down_right",
+        "down",
+        "down_left",
+        "left",
+        "up_left"
+      ],
+      "fire": [
+        "none",
+        "up",
+        "right",
+        "down",
+        "left"
+      ]
+    },
+    "changedRewardFunction": false,
+    "observationOrActionSchemaChanged": false,
+    "hitRateMetric": "damageBearingFireDecisionRate = decision intervals with enemy HP reduction and fire != none / fire decision intervals; an action-level proxy, not projectile accuracy",
+    "trainingConfig": {
+      "learningRate": 0.0003,
+      "gamma": 0.999,
+      "gaeLambda": 0.95,
+      "clipRange": 0.2,
+      "updateEpochs": 4,
+      "minibatchSize": 256,
+      "entropyCoefficient": 0.005,
+      "valueCoefficient": 0.5,
+      "maxGradNorm": 0.5,
+      "rolloutSteps": 256
+    },
+    "totalTrainingDecisions": 1536,
+    "totalTrainingFrames": 6138,
+    "completedTrainingEpisodes": 10
+  },
+  "points": [
+    {
+      "iteration": 1,
+      "stage": "01_stationary_aim_proxy",
+      "stageLabel": "静止目标瞄准近似",
+      "stageShort": "S1",
+      "episodeReward": -9.73399999999998,
+      "actorLoss": -0.017403503837017373,
+      "criticLoss": 8.71212767259752,
+      "policyEntropy": 3.496271676950643,
+      "approxKl": 0.007833939975969626,
+      "clipFraction": 0.0087890625,
+      "explainedVariance": 0.009105969798896885,
+      "roomClearRate": 0,
+      "cumulativeRoomClearRate": 0,
+      "damageDealt": 68.5,
+      "damageTaken": 11,
+      "damageBearingFireDecisionRate": 0.08333333333333333,
+      "testClearRate": 0,
+      "testMeanEpisodeReward": 7.983125000000001,
+      "testMeanDamageDealt": 34.1875,
+      "testMeanDamageTaken": 3.875,
+      "testDamageBearingFireDecisionRate": 0.06050228310502283
+    },
+    {
+      "iteration": 2,
+      "stage": "02_moving_target",
+      "stageLabel": "移动目标瞄准",
+      "stageShort": "S2",
+      "episodeReward": 31.399999999999963,
+      "actorLoss": -0.008992937008086892,
+      "criticLoss": 3.4796516328778915,
+      "policyEntropy": 3.4853674100164977,
+      "approxKl": -0.0011073228456241304,
+      "clipFraction": 0.001953125,
+      "explainedVariance": -0.04158524790747631,
+      "roomClearRate": 0,
+      "cumulativeRoomClearRate": 0,
+      "damageDealt": 59.5,
+      "damageTaken": 4,
+      "damageBearingFireDecisionRate": 0.06629834254143646,
+      "testClearRate": 0,
+      "testMeanEpisodeReward": 3.020999999999982,
+      "testMeanDamageDealt": 29.8125,
+      "testMeanDamageTaken": 4,
+      "testDamageBearingFireDecisionRate": 0.05752753977968176
+    },
+    {
+      "iteration": 3,
+      "stage": "03_projectile_dodge",
+      "stageLabel": "弹幕躲避",
+      "stageShort": "S3",
+      "episodeReward": -38.09199999999996,
+      "actorLoss": -0.004984184838793831,
+      "criticLoss": 8.421155229645635,
+      "policyEntropy": 3.5270749270428845,
+      "approxKl": 0.001265113679931297,
+      "clipFraction": 0,
+      "explainedVariance": -0.025698788730986966,
+      "roomClearRate": 0,
+      "cumulativeRoomClearRate": 0,
+      "damageDealt": 35,
+      "damageTaken": 9,
+      "damageBearingFireDecisionRate": 0.05025125628140704,
+      "testClearRate": 0,
+      "testMeanEpisodeReward": 2.021875000000012,
+      "testMeanDamageDealt": 33.1875,
+      "testMeanDamageTaken": 4.875,
+      "testDamageBearingFireDecisionRate": 0.06935687263556116
+    },
+    {
+      "iteration": 4,
+      "stage": "04_multi_enemy",
+      "stageLabel": "多敌人组合",
+      "stageShort": "S4",
+      "episodeReward": 16.77549999999997,
+      "actorLoss": -0.006892479910827313,
+      "criticLoss": 9.235981361871476,
+      "policyEntropy": 3.4640860627800274,
+      "approxKl": 0.0006206577838512453,
+      "clipFraction": 0,
+      "explainedVariance": -0.11517796981015782,
+      "roomClearRate": 0,
+      "cumulativeRoomClearRate": 0,
+      "damageDealt": 113,
+      "damageTaken": 10,
+      "damageBearingFireDecisionRate": 0.11351351351351352,
+      "testClearRate": 0,
+      "testMeanEpisodeReward": -14.297000000000004,
+      "testMeanDamageDealt": 31.25,
+      "testMeanDamageTaken": 5.25,
+      "testDamageBearingFireDecisionRate": 0.06295399515738499
+    },
+    {
+      "iteration": 5,
+      "stage": "05_boss",
+      "stageLabel": "Boss 战斗",
+      "stageShort": "S5",
+      "episodeReward": -15.944500000000009,
+      "actorLoss": -0.0030792643697523867,
+      "criticLoss": 15.308678082832703,
+      "policyEntropy": 3.525308755291172,
+      "approxKl": -0.0004109620129446783,
+      "clipFraction": 0,
+      "explainedVariance": -0.01577357714943317,
+      "roomClearRate": 0,
+      "cumulativeRoomClearRate": 0,
+      "damageDealt": 79,
+      "damageTaken": 12,
+      "damageBearingFireDecisionRate": 0.06451612903225806,
+      "testClearRate": 0,
+      "testMeanEpisodeReward": 4.590499999999997,
+      "testMeanDamageDealt": 37,
+      "testMeanDamageTaken": 4.5,
+      "testDamageBearingFireDecisionRate": 0.07535885167464115
+    },
+    {
+      "iteration": 6,
+      "stage": "06_mixed",
+      "stageLabel": "混合场景",
+      "stageShort": "S6",
+      "episodeReward": 3.990000000000002,
+      "actorLoss": -0.011193617082803751,
+      "criticLoss": 5.096780006954222,
+      "policyEntropy": 3.487904264561652,
+      "approxKl": -0.000535269652157954,
+      "clipFraction": 0.0009765625,
+      "explainedVariance": -0.005156889724086788,
+      "roomClearRate": 0,
+      "cumulativeRoomClearRate": 0,
+      "damageDealt": 69,
+      "damageTaken": 7,
+      "damageBearingFireDecisionRate": 0.05154639175257732,
+      "testClearRate": 0,
+      "testMeanEpisodeReward": 4.149250000000005,
+      "testMeanDamageDealt": 34.6875,
+      "testMeanDamageTaken": 4.125,
+      "testDamageBearingFireDecisionRate": 0.06432038834951456
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "gamebot-training-benchmark-summary/1",
+  "measuredOn": "2026-11-01",
+  "runtime": {
+    "node": "v24.22.1",
+    "gameExecutableSha256": "7122AC28779925B24E23E2416F231322B1470388BD25E2C08665AD8D53B3EA4F",
+    "segmentImageSha256": "A15C0DEADD692850E9AE39F0B09432682C3478F307BE752570DF7DBC3F813C37",
+    "trainingWasmSha256": "69116FA92A0675D4D13C5EA2399A59A010E8FB69445824AD957426BC54DF225E",
+    "room": "s.boss.1010",
+    "roomIdentity": "5.1010",
+    "roomSize": "15x9",
+    "actionRepeat": 4,
+    "logicFrameRateHz": 30
+  },
+  "singleInstance": {
+    "resetAndRoomSetupMs": 6886.8,
+    "timedRolloutMs": 685.0,
+    "frames": 433,
+    "decisions": 109,
+    "framesPerSecond": 632.10,
+    "realTimeMultiple": 21.07,
+    "terminated": "player death during the speed-test action sweep",
+    "memoryAfterRollout": {
+      "workingSetMiB": 2149.9,
+      "privateBytesMiB": 2231.8
+    }
+  },
+  "twoInstances": {
+    "resetAndRoomSetupMs": 7202.2,
+    "timedRolloutMs": 1001.2,
+    "totalFrames": 901,
+    "aggregateFramesPerSecond": 899.96,
+    "aggregateRealTimeMultiple": 30.00,
+    "throughputRatioAgainstSingleInstance": 1.42,
+    "instances": [
+      {
+        "seed": "3JY1 6FLR",
+        "frames": 433,
+        "decisions": 109,
+        "framesPerSecond": 432.50,
+        "realTimeMultiple": 14.42,
+        "terminated": "player death during the speed-test action sweep",
+        "memoryAfterRollout": {
+          "workingSetMiB": 1939.0,
+          "privateBytesMiB": 1958.8
+        }
+      },
+      {
+        "seed": "7W3L P1Z9",
+        "frames": 468,
+        "decisions": 117,
+        "framesPerSecond": 467.46,
+        "realTimeMultiple": 15.58,
+        "terminated": "player death during the speed-test action sweep",
+        "memoryAfterRollout": {
+          "workingSetMiB": 2058.2,
+          "privateBytesMiB": 2086.9
+        }
+      }
+    ]
+  },
+  "measurementNotes": [
+    "Frame throughput excludes reset and room setup; setup is reported separately.",
+    "Real-time multiples divide logic frames per second by the verified 30 Hz GameFrame rate.",
+    "Memory is a Windows point sample before/after rollout, not a measured peak. It covers each engine worker process, not the coordinator.",
+    "Each instance holds one 640 MiB in-memory reset snapshot during this benchmark; the private-memory figures include it.",
+    "The action sweep is a throughput test, not a policy-quality evaluation. Neither run cleared the room."
+  ]
+}

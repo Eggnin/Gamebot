@@ -1,0 +1,105 @@
+{
+  "schema": "gamebot-training-validation/1",
+  "measuredOn": "2026-11-01",
+  "engineBuild": {
+    "gameExecutableSha256": "7122AC28779925B24E23E2416F231322B1470388BD25E2C08665AD8D53B3EA4F",
+    "segmentImageSha256": "A15C0DEADD692850E9AE39F0B09432682C3478F307BE752570DF7DBC3F813C37",
+    "trainingWasmSha256": "69116FA92A0675D4D13C5EA2399A59A010E8FB69445824AD957426BC54DF225E"
+  },
+  "checks": {
+    "actionContract": { "passed": 4, "failed": 0 },
+    "nativeStep": {
+      "passed": true,
+      "singleFrameSteps": 60,
+      "eachStepAdvancedExactlyOneLogicFrame": true,
+      "pausedStateStayedFrozen": true
+    },
+    "nativeColdReset": {
+      "passed": true,
+      "sameSeedRuns": 2,
+      "framesPerRun": 180,
+      "publicObservationHashesMatched": true
+    },
+    "environmentColdReset": {
+      "passed": true,
+      "sameSeedRuns": 2,
+      "framesPerRun": 180,
+      "publicObservationHashesMatched": true
+    },
+    "snapshotRestoreFork": {
+      "passed": true,
+      "memoryBytes": 671088640,
+      "snapshotAtFrame": 30,
+      "restoreReplayFrames": 60,
+      "restoreReplayHashesMatched": true,
+      "forkHandles": 2,
+      "forkTrajectoriesWereIndependentAndRepeatable": true,
+      "restoreMs": 37.0,
+      "snapshotCaptureMs": 361.4,
+      "sameSceneAutomaticResetMs": 32.1
+    },
+    "automaticRoomReset": {
+      "passed": true,
+      "verifiedDistinctRoomScenarios": 12,
+      "episodesIncludingAutoCycle": 13,
+      "coldStarts": 1,
+      "warmConsoleResets": 12,
+      "averageWarmResetMs": 700.9,
+      "allTargetNPCsObserved": true,
+      "seedConfirmedForEveryEpisode": true
+    },
+    "jsonLinesProtocol": {
+      "passed": true,
+      "againstConfiguredResearchRoot": "D:\\Isaac\\research",
+      "externalActions": 16,
+      "nativeFramesPerAction": 4,
+      "nativeFramesAdvanced": 64,
+      "playerMovedRight": true,
+      "playerTearObserved": true,
+      "bombsOrPickupsInPolicyObservation": false,
+      "snapshotForkRestoreRoundTrip": true,
+      "crossProcessForkStarted": true,
+      "stdioParallelForkAdvancedFourFrames": true,
+      "parallelBranchStep": true,
+      "warmConsoleResetToSecondRoom": true
+    },
+    "parallelInstances": {
+      "passed": true,
+      "independentEngineProcesses": 2,
+      "distinctSeeds": 2,
+      "separateRunDirectories": true
+    },
+    "parallelSnapshotFork": {
+      "passed": true,
+      "independentForkProcesses": 2,
+      "importedSnapshotBytes": 671088640,
+      "bothWorkersMatchedSnapshotObservation": true,
+      "crossProcessActionReplayMatched": true,
+      "branchTrajectoriesWereIndependent": true,
+      "leftBranchReplayMatched": true,
+      "exportedSnapshotRemovedOnExplicitDrop": true,
+      "branchSnapshotSurvivedSourceDrop": true,
+      "branchSnapshotFilesCleaned": true,
+      "fileBackedRestoreMs": 405.7,
+      "parallelForkStartupAndImportMs": 7342.3
+    },
+    "trajectory": {
+      "passed": true,
+      "format": "JSONL",
+      "recordsInSample": 17,
+      "containsObservationBeforeAndAfter": true,
+      "containsOnlyMoveAndFireActions": true,
+      "containsRawMemoryPointers": false
+    }
+  },
+  "scopeAndLimits": [
+    "The built-in scene list covers twelve verified boss rooms; other room types are not registered yet.",
+    "Each process holds at most two 640 MiB in-memory snapshots. Exported snapshots are pinned to the exact J460 executable and WASM hashes.",
+    "Fork handles share an immutable snapshot and run branches sequentially in one worker; forkParallel imports a file-backed snapshot into independent workers. Each new fork process pays one cold module startup.",
+    "The compiled runtime does not export Emscripten FS; training disables disk save persistence. The tested snapshot restores WASM linear memory, worker input/frame state, and positional resource-read state for the tested room/actions.",
+    "The current package supplies the environment, not PPO or another policy optimizer.",
+    "The speed-test action sweep ended in player death and is not a combat-success claim.",
+    "A cold start and room setup took about 6.8 seconds. Same-scene snapshot reset took about 32 ms; changing scene with the native console took about 0.70 seconds on average across the twelve-room sweep.",
+    "The upstream checkout already had local uncommitted training-related changes; this work left that checkout and D:\\Isaac unchanged. New adapter files are isolated in this package."
+  ]
+}

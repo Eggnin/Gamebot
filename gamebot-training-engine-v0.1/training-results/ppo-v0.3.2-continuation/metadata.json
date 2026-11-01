@@ -1,0 +1,45 @@
+{
+  "schema": "gamebot-ppo-continuation/1",
+  "sourceCheckpoint": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json",
+  "sourceBestHeldoutPolicy": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\best-heldout-policy.json",
+  "startedFrom": {
+    "iteration": 6,
+    "globalSteps": 1536,
+    "globalFrames": 6138,
+    "completedEpisodes": 10,
+    "roomsCleared": 0,
+    "deaths": 0,
+    "bestMeanEpisodeReward": 31.399999999999963,
+    "resumedFrom": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json"
+  },
+  "trainingSeeds": [
+    "3JY1 6FLR",
+    "7W3L P1Z9",
+    "SWGF G7WV"
+  ],
+  "heldOutTestSeeds": [
+    "WE4Y Y4DM",
+    "F2HZ 6ZVD"
+  ],
+  "heldOutTestScenes": [
+    "gurdyJr",
+    "larryJr",
+    "dukeOfFlies",
+    "theBloat"
+  ],
+  "iterations": 4,
+  "config": {
+    "learningRate": 0.0003,
+    "gamma": 0.999,
+    "gaeLambda": 0.95,
+    "clipRange": 0.2,
+    "updateEpochs": 4,
+    "minibatchSize": 256,
+    "entropyCoefficient": 0.005,
+    "valueCoefficient": 0.5,
+    "maxGradNorm": 0.5,
+    "rolloutSteps": 256
+  },
+  "changedRewardFunction": false,
+  "observationOrActionSchemaChanged": false
+}

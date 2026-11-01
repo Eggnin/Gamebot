@@ -1,0 +1,207 @@
+{
+  "schema": "gamebot-auto-reset-check/1",
+  "pass": true,
+  "episodes": [
+    {
+      "requestedScene": "monstro",
+      "actualScene": "monstro",
+      "room": {
+        "type": 5,
+        "variant": 1010,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "3JY1 6FLR",
+      "resetMode": "cold",
+      "resetMs": 6953.828299999999,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "larryJr",
+      "actualScene": "larryJr",
+      "room": {
+        "type": 5,
+        "variant": 1020,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "7W3L P1Z9",
+      "resetMode": "warm-console",
+      "resetMs": 786.7599999999993,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "chub",
+      "actualScene": "chub",
+      "room": {
+        "type": 5,
+        "variant": 1030,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "SWGF G7WV",
+      "resetMode": "warm-console",
+      "resetMs": 756.6309999999994,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "dukeOfFlies",
+      "actualScene": "dukeOfFlies",
+      "room": {
+        "type": 5,
+        "variant": 2010,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "3JY1 6FLR",
+      "resetMode": "warm-console",
+      "resetMs": 694.1488000000008,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "blastocyst",
+      "actualScene": "blastocyst",
+      "room": {
+        "type": 5,
+        "variant": 2040,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "7W3L P1Z9",
+      "resetMode": "warm-console",
+      "resetMs": 700.2381000000005,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "loki",
+      "actualScene": "loki",
+      "room": {
+        "type": 5,
+        "variant": 2030,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "SWGF G7WV",
+      "resetMode": "warm-console",
+      "resetMs": 722.5309000000016,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "gurdyJr",
+      "actualScene": "gurdyJr",
+      "room": {
+        "type": 5,
+        "variant": 3280,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "3JY1 6FLR",
+      "resetMode": "warm-console",
+      "resetMs": 697.657799999999,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "theBloat",
+      "actualScene": "theBloat",
+      "room": {
+        "type": 5,
+        "variant": 3300,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "7W3L P1Z9",
+      "resetMode": "warm-console",
+      "resetMs": 692.3178000000007,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "widow",
+      "actualScene": "widow",
+      "room": {
+        "type": 5,
+        "variant": 3340,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "SWGF G7WV",
+      "resetMode": "warm-console",
+      "resetMs": 692.2717999999986,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "famine",
+      "actualScene": "famine",
+      "room": {
+        "type": 5,
+        "variant": 4010,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "3JY1 6FLR",
+      "resetMode": "warm-console",
+      "resetMs": 687.4249999999993,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "pestilence",
+      "actualScene": "pestilence",
+      "room": {
+        "type": 5,
+        "variant": 4020,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "7W3L P1Z9",
+      "resetMode": "warm-console",
+      "resetMs": 691.8868999999995,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "theCage",
+      "actualScene": "theCage",
+      "room": {
+        "type": 5,
+        "variant": 5060,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "SWGF G7WV",
+      "resetMode": "warm-console",
+      "resetMs": 701.4130999999998,
+      "targetObserved": true
+    },
+    {
+      "requestedScene": "auto",
+      "actualScene": "monstro",
+      "room": {
+        "type": 5,
+        "variant": 1010,
+        "width": 15,
+        "height": 9,
+        "cleared": false
+      },
+      "seed": "3JY1 6FLR",
+      "resetMode": "warm-console",
+      "resetMs": 669.8282999999992,
+      "targetObserved": true
+    }
+  ],
+  "summary": {
+    "distinctScenarios": 12,
+    "warmResets": 12,
+    "averageWarmResetMs": 707.7591249999999,
+    "coldResets": 1
+  }
+}

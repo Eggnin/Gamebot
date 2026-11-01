@@ -1,0 +1,44 @@
+{
+  "schema": "gamebot-snapshot-fork-check/1",
+  "pass": true,
+  "checks": {
+    "snapshotCapturedAtFrame": 30,
+    "restoreMatchedCheckpoint": true,
+    "restoreReplayMatched": true,
+    "forksShareCheckpoint": true,
+    "leftBranchWasIndependent": true,
+    "branchesHadDistinctTrajectories": true,
+    "anchorRestoreMatchedColdReset": true,
+    "automaticResetUsedSnapshot": true,
+    "automaticResetMatchedInitial": true,
+    "snapshotRestore": true,
+    "forkReplay": true,
+    "reset": true
+  },
+  "coldSetupMs": 6959.4438,
+  "snapshotCaptureMs": 384.6332999999995,
+  "snapshotBytes": 671088640,
+  "snapshotMemorySha256": "70b76f0d6668cec8e0fb57322a8ddc7aaced4db040961a33965e40db793b7096",
+  "restoreMs": 36.50680000000011,
+  "forks": [
+    {
+      "id": "fork-1",
+      "snapshotId": 2,
+      "label": "left-branch",
+      "frame": 30,
+      "seed": "3JY1 6FLR",
+      "room": "s.boss.1010",
+      "memoryBytes": 671088640
+    },
+    {
+      "id": "fork-2",
+      "snapshotId": 2,
+      "label": "right-branch",
+      "frame": 30,
+      "seed": "3JY1 6FLR",
+      "room": "s.boss.1010",
+      "memoryBytes": 671088640
+    }
+  ],
+  "snapshotResetMs": 34.23940000000039
+}

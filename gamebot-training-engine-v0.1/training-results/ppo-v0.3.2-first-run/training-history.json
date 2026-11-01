@@ -1,0 +1,747 @@
+{
+  "metadata": {
+    "schema": "gamebot-ppo-pilot/1",
+    "createdAt": "2026-11-01T04:04:25.651Z",
+    "actionRepeat": 4,
+    "maxStepsPerEpisode": 600,
+    "trainingSeeds": [
+      "3JY1 6FLR",
+      "7W3L P1Z9",
+      "SWGF G7WV"
+    ],
+    "heldOutTestSeeds": [
+      "WE4Y Y4DM",
+      "F2HZ 6ZVD"
+    ],
+    "heldOutTestScenes": [
+      "gurdyJr",
+      "larryJr",
+      "dukeOfFlies",
+      "theBloat"
+    ],
+    "curriculum": [
+      {
+        "id": "01_stationary_aim_proxy",
+        "label": "静止目标瞄准近似",
+        "scene": "gurdyJr"
+      },
+      {
+        "id": "02_moving_target",
+        "label": "移动目标瞄准",
+        "scene": "larryJr"
+      },
+      {
+        "id": "03_projectile_dodge",
+        "label": "弹幕躲避",
+        "scene": "theBloat"
+      },
+      {
+        "id": "04_multi_enemy",
+        "label": "多敌人组合",
+        "scene": "dukeOfFlies"
+      },
+      {
+        "id": "05_boss",
+        "label": "Boss 战斗",
+        "scene": "auto"
+      },
+      {
+        "id": "06_mixed",
+        "label": "混合场景",
+        "scene": "auto"
+      }
+    ],
+    "actionSpace": {
+      "move": [
+        "none",
+        "up",
+        "up_right",
+        "right",
+        "down_right",
+        "down",
+        "down_left",
+        "left",
+        "up_left"
+      ],
+      "fire": [
+        "none",
+        "up",
+        "right",
+        "down",
+        "left"
+      ]
+    },
+    "changedRewardFunction": false,
+    "observationOrActionSchemaChanged": false,
+    "hitRateMetric": "damageBearingFireDecisionRate = decision intervals with enemy HP reduction and fire != none / fire decision intervals; an action-level proxy, not projectile accuracy",
+    "trainingConfig": {
+      "learningRate": 0.0003,
+      "gamma": 0.999,
+      "gaeLambda": 0.95,
+      "clipRange": 0.2,
+      "updateEpochs": 4,
+      "minibatchSize": 256,
+      "entropyCoefficient": 0.005,
+      "valueCoefficient": 0.5,
+      "maxGradNorm": 0.5,
+      "rolloutSteps": 256
+    },
+    "totalTrainingDecisions": 1536,
+    "totalTrainingFrames": 6138,
+    "completedTrainingEpisodes": 10
+  },
+  "rounds": [
+    {
+      "iteration": 1,
+      "globalSteps": 256,
+      "globalFrames": 1024,
+      "completedEpisodes": 2,
+      "roomsCleared": 0,
+      "deaths": 1,
+      "bestMeanEpisodeReward": -9.73399999999998,
+      "rollout": {
+        "decisions": 256,
+        "rewardSum": -12.523999999999962,
+        "meanRewardPerDecision": -0.04892187499999985,
+        "damageDealt": 68.5,
+        "damageTaken": 11,
+        "firingDecisions": 168,
+        "damageBearingFireDecisions": 14,
+        "damageBearingFireDecisionRate": 0.08333333333333333,
+        "framesAdvanced": 1024,
+        "terminatedCount": 1,
+        "truncatedCount": 1,
+        "episodeRewards": [
+          -10.599999999999964,
+          -8.867999999999995
+        ],
+        "episodeSummaries": [
+          {
+            "reward": -10.599999999999964,
+            "cleared": false,
+            "dead": false,
+            "terminated": false,
+            "truncated": true,
+            "decisions": 150,
+            "frames": 600,
+            "clearTimeFrames": null,
+            "damageDealt": 15,
+            "damageTaken": 5,
+            "firingDecisions": 98,
+            "damageBearingFireDecisions": 4,
+            "damageBearingFireDecisionRate": 0.04081632653061224
+          },
+          {
+            "reward": -8.867999999999995,
+            "cleared": false,
+            "dead": true,
+            "terminated": true,
+            "truncated": false,
+            "decisions": 92,
+            "frames": 368,
+            "clearTimeFrames": null,
+            "damageDealt": 46.5,
+            "damageTaken": 6,
+            "firingDecisions": 61,
+            "damageBearingFireDecisions": 9,
+            "damageBearingFireDecisionRate": 0.14754098360655737
+          }
+        ],
+        "meanEpisodeReward": -9.73399999999998,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0
+      },
+      "update": {
+        "policyLoss": -0.017403503837017373,
+        "valueLoss": 8.71212767259752,
+        "entropy": 3.496271676950643,
+        "approximateKl": 0.007833939975969626,
+        "clipFraction": 0.0087890625,
+        "gradientNorm": 5.173200755667588,
+        "updates": 4,
+        "explainedVariance": 0.009105969798896885
+      },
+      "checkpoint": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json",
+      "bestPolicySaved": true,
+      "stage": {
+        "id": "01_stationary_aim_proxy",
+        "label": "静止目标瞄准近似",
+        "scene": "gurdyJr"
+      },
+      "trainingMetrics": {
+        "iteration": 1,
+        "stage": "01_stationary_aim_proxy",
+        "stageLabel": "静止目标瞄准近似",
+        "stageShort": "S1",
+        "episodeReward": -9.73399999999998,
+        "actorLoss": -0.017403503837017373,
+        "criticLoss": 8.71212767259752,
+        "policyEntropy": 3.496271676950643,
+        "approxKl": 0.007833939975969626,
+        "clipFraction": 0.0087890625,
+        "explainedVariance": 0.009105969798896885,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0,
+        "damageDealt": 68.5,
+        "damageTaken": 11,
+        "damageBearingFireDecisionRate": 0.08333333333333333,
+        "testClearRate": 0,
+        "testMeanEpisodeReward": 7.983125000000001,
+        "testMeanDamageDealt": 34.1875,
+        "testMeanDamageTaken": 3.875,
+        "testDamageBearingFireDecisionRate": 0.06050228310502283
+      },
+      "heldOutEvaluation": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.25,
+        "truncationRate": 0.75,
+        "meanEpisodeReward": 7.983125000000001,
+        "meanDamageDealt": 34.1875,
+        "meanDamageTaken": 3.875,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.06050228310502283,
+        "totalFiringDecisions": 876,
+        "totalDamageBearingFireDecisions": 53
+      }
+    },
+    {
+      "iteration": 2,
+      "globalSteps": 512,
+      "globalFrames": 2048,
+      "completedEpisodes": 3,
+      "roomsCleared": 0,
+      "deaths": 1,
+      "bestMeanEpisodeReward": 31.399999999999963,
+      "rollout": {
+        "decisions": 256,
+        "rewardSum": 38.475999999999964,
+        "meanRewardPerDecision": 0.15029687499999986,
+        "damageDealt": 59.5,
+        "damageTaken": 4,
+        "firingDecisions": 181,
+        "damageBearingFireDecisions": 12,
+        "damageBearingFireDecisionRate": 0.06629834254143646,
+        "framesAdvanced": 1024,
+        "terminatedCount": 0,
+        "truncatedCount": 1,
+        "episodeRewards": [
+          31.399999999999963
+        ],
+        "episodeSummaries": [
+          {
+            "reward": 31.399999999999963,
+            "cleared": false,
+            "dead": false,
+            "terminated": false,
+            "truncated": true,
+            "decisions": 150,
+            "frames": 600,
+            "clearTimeFrames": null,
+            "damageDealt": 42,
+            "damageTaken": 2,
+            "firingDecisions": 104,
+            "damageBearingFireDecisions": 7,
+            "damageBearingFireDecisionRate": 0.0673076923076923
+          }
+        ],
+        "meanEpisodeReward": 31.399999999999963,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0
+      },
+      "update": {
+        "policyLoss": -0.008992937008086892,
+        "valueLoss": 3.4796516328778915,
+        "entropy": 3.4853674100164977,
+        "approximateKl": -0.0011073228456241304,
+        "clipFraction": 0.001953125,
+        "gradientNorm": 9.816239622519667,
+        "updates": 4,
+        "explainedVariance": -0.04158524790747631
+      },
+      "checkpoint": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json",
+      "bestPolicySaved": true,
+      "stage": {
+        "id": "02_moving_target",
+        "label": "移动目标瞄准",
+        "scene": "larryJr"
+      },
+      "trainingMetrics": {
+        "iteration": 2,
+        "stage": "02_moving_target",
+        "stageLabel": "移动目标瞄准",
+        "stageShort": "S2",
+        "episodeReward": 31.399999999999963,
+        "actorLoss": -0.008992937008086892,
+        "criticLoss": 3.4796516328778915,
+        "policyEntropy": 3.4853674100164977,
+        "approxKl": -0.0011073228456241304,
+        "clipFraction": 0.001953125,
+        "explainedVariance": -0.04158524790747631,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0,
+        "damageDealt": 59.5,
+        "damageTaken": 4,
+        "damageBearingFireDecisionRate": 0.06629834254143646,
+        "testClearRate": 0,
+        "testMeanEpisodeReward": 3.020999999999982,
+        "testMeanDamageDealt": 29.8125,
+        "testMeanDamageTaken": 4,
+        "testDamageBearingFireDecisionRate": 0.05752753977968176
+      },
+      "heldOutEvaluation": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.25,
+        "truncationRate": 0.75,
+        "meanEpisodeReward": 3.020999999999982,
+        "meanDamageDealt": 29.8125,
+        "meanDamageTaken": 4,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.05752753977968176,
+        "totalFiringDecisions": 817,
+        "totalDamageBearingFireDecisions": 47
+      }
+    },
+    {
+      "iteration": 3,
+      "globalSteps": 768,
+      "globalFrames": 3072,
+      "completedEpisodes": 4,
+      "roomsCleared": 0,
+      "deaths": 2,
+      "bestMeanEpisodeReward": 31.399999999999963,
+      "rollout": {
+        "decisions": 256,
+        "rewardSum": -36.02399999999973,
+        "meanRewardPerDecision": -0.14071874999999895,
+        "damageDealt": 35,
+        "damageTaken": 9,
+        "firingDecisions": 199,
+        "damageBearingFireDecisions": 10,
+        "damageBearingFireDecisionRate": 0.05025125628140704,
+        "framesAdvanced": 1024,
+        "terminatedCount": 1,
+        "truncatedCount": 0,
+        "episodeRewards": [
+          -38.09199999999996
+        ],
+        "episodeSummaries": [
+          {
+            "reward": -38.09199999999996,
+            "cleared": false,
+            "dead": true,
+            "terminated": true,
+            "truncated": false,
+            "decisions": 148,
+            "frames": 592,
+            "clearTimeFrames": null,
+            "damageDealt": 17.5,
+            "damageTaken": 6,
+            "firingDecisions": 121,
+            "damageBearingFireDecisions": 5,
+            "damageBearingFireDecisionRate": 0.04132231404958678
+          }
+        ],
+        "meanEpisodeReward": -38.09199999999996,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0
+      },
+      "update": {
+        "policyLoss": -0.004984184838793831,
+        "valueLoss": 8.421155229645635,
+        "entropy": 3.5270749270428845,
+        "approximateKl": 0.001265113679931297,
+        "clipFraction": 0,
+        "gradientNorm": 9.740595810991096,
+        "updates": 4,
+        "explainedVariance": -0.025698788730986966
+      },
+      "checkpoint": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json",
+      "bestPolicySaved": false,
+      "stage": {
+        "id": "03_projectile_dodge",
+        "label": "弹幕躲避",
+        "scene": "theBloat"
+      },
+      "trainingMetrics": {
+        "iteration": 3,
+        "stage": "03_projectile_dodge",
+        "stageLabel": "弹幕躲避",
+        "stageShort": "S3",
+        "episodeReward": -38.09199999999996,
+        "actorLoss": -0.004984184838793831,
+        "criticLoss": 8.421155229645635,
+        "policyEntropy": 3.5270749270428845,
+        "approxKl": 0.001265113679931297,
+        "clipFraction": 0,
+        "explainedVariance": -0.025698788730986966,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0,
+        "damageDealt": 35,
+        "damageTaken": 9,
+        "damageBearingFireDecisionRate": 0.05025125628140704,
+        "testClearRate": 0,
+        "testMeanEpisodeReward": 2.021875000000012,
+        "testMeanDamageDealt": 33.1875,
+        "testMeanDamageTaken": 4.875,
+        "testDamageBearingFireDecisionRate": 0.06935687263556116
+      },
+      "heldOutEvaluation": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.25,
+        "truncationRate": 0.75,
+        "meanEpisodeReward": 2.021875000000012,
+        "meanDamageDealt": 33.1875,
+        "meanDamageTaken": 4.875,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.06935687263556116,
+        "totalFiringDecisions": 793,
+        "totalDamageBearingFireDecisions": 55
+      }
+    },
+    {
+      "iteration": 4,
+      "globalSteps": 1024,
+      "globalFrames": 4093,
+      "completedEpisodes": 6,
+      "roomsCleared": 0,
+      "deaths": 3,
+      "bestMeanEpisodeReward": 31.399999999999963,
+      "rollout": {
+        "decisions": 256,
+        "rewardSum": 36.979000000000035,
+        "meanRewardPerDecision": 0.14444921875000014,
+        "damageDealt": 113,
+        "damageTaken": 10,
+        "firingDecisions": 185,
+        "damageBearingFireDecisions": 21,
+        "damageBearingFireDecisionRate": 0.11351351351351352,
+        "framesAdvanced": 1021,
+        "terminatedCount": 1,
+        "truncatedCount": 1,
+        "episodeRewards": [
+          5.151000000000007,
+          28.39999999999993
+        ],
+        "episodeSummaries": [
+          {
+            "reward": 5.151000000000007,
+            "cleared": false,
+            "dead": true,
+            "terminated": true,
+            "truncated": false,
+            "decisions": 88,
+            "frames": 349,
+            "clearTimeFrames": null,
+            "damageDealt": 60.5,
+            "damageTaken": 6,
+            "firingDecisions": 62,
+            "damageBearingFireDecisions": 12,
+            "damageBearingFireDecisionRate": 0.1935483870967742
+          },
+          {
+            "reward": 28.39999999999993,
+            "cleared": false,
+            "dead": false,
+            "terminated": false,
+            "truncated": true,
+            "decisions": 150,
+            "frames": 600,
+            "clearTimeFrames": null,
+            "damageDealt": 49,
+            "damageTaken": 4,
+            "firingDecisions": 111,
+            "damageBearingFireDecisions": 8,
+            "damageBearingFireDecisionRate": 0.07207207207207207
+          }
+        ],
+        "meanEpisodeReward": 16.77549999999997,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0
+      },
+      "update": {
+        "policyLoss": -0.006892479910827313,
+        "valueLoss": 9.235981361871476,
+        "entropy": 3.4640860627800274,
+        "approximateKl": 0.0006206577838512453,
+        "clipFraction": 0,
+        "gradientNorm": 9.71407624145925,
+        "updates": 4,
+        "explainedVariance": -0.11517796981015782
+      },
+      "checkpoint": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json",
+      "bestPolicySaved": false,
+      "stage": {
+        "id": "04_multi_enemy",
+        "label": "多敌人组合",
+        "scene": "dukeOfFlies"
+      },
+      "trainingMetrics": {
+        "iteration": 4,
+        "stage": "04_multi_enemy",
+        "stageLabel": "多敌人组合",
+        "stageShort": "S4",
+        "episodeReward": 16.77549999999997,
+        "actorLoss": -0.006892479910827313,
+        "criticLoss": 9.235981361871476,
+        "policyEntropy": 3.4640860627800274,
+        "approxKl": 0.0006206577838512453,
+        "clipFraction": 0,
+        "explainedVariance": -0.11517796981015782,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0,
+        "damageDealt": 113,
+        "damageTaken": 10,
+        "damageBearingFireDecisionRate": 0.11351351351351352,
+        "testClearRate": 0,
+        "testMeanEpisodeReward": -14.297000000000004,
+        "testMeanDamageDealt": 31.25,
+        "testMeanDamageTaken": 5.25,
+        "testDamageBearingFireDecisionRate": 0.06295399515738499
+      },
+      "heldOutEvaluation": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.75,
+        "truncationRate": 0.25,
+        "meanEpisodeReward": -14.297000000000004,
+        "meanDamageDealt": 31.25,
+        "meanDamageTaken": 5.25,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.06295399515738499,
+        "totalFiringDecisions": 826,
+        "totalDamageBearingFireDecisions": 52
+      }
+    },
+    {
+      "iteration": 5,
+      "globalSteps": 1280,
+      "globalFrames": 5114,
+      "completedEpisodes": 8,
+      "roomsCleared": 0,
+      "deaths": 5,
+      "bestMeanEpisodeReward": 31.399999999999963,
+      "rollout": {
+        "decisions": 256,
+        "rewardSum": -32.021000000000136,
+        "meanRewardPerDecision": -0.12508203125000053,
+        "damageDealt": 79,
+        "damageTaken": 12,
+        "firingDecisions": 186,
+        "damageBearingFireDecisions": 12,
+        "damageBearingFireDecisionRate": 0.06451612903225806,
+        "framesAdvanced": 1021,
+        "terminatedCount": 2,
+        "truncatedCount": 0,
+        "episodeRewards": [
+          -20.855999999999987,
+          -11.03300000000003
+        ],
+        "episodeSummaries": [
+          {
+            "reward": -20.855999999999987,
+            "cleared": false,
+            "dead": true,
+            "terminated": true,
+            "truncated": false,
+            "decisions": 89,
+            "frames": 356,
+            "clearTimeFrames": null,
+            "damageDealt": 34.5,
+            "damageTaken": 6,
+            "firingDecisions": 66,
+            "damageBearingFireDecisions": 6,
+            "damageBearingFireDecisionRate": 0.09090909090909091
+          },
+          {
+            "reward": -11.03300000000003,
+            "cleared": false,
+            "dead": true,
+            "terminated": true,
+            "truncated": false,
+            "decisions": 134,
+            "frames": 533,
+            "clearTimeFrames": null,
+            "damageDealt": 44.5,
+            "damageTaken": 6,
+            "firingDecisions": 98,
+            "damageBearingFireDecisions": 6,
+            "damageBearingFireDecisionRate": 0.061224489795918366
+          }
+        ],
+        "meanEpisodeReward": -15.944500000000009,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0
+      },
+      "update": {
+        "policyLoss": -0.0030792643697523867,
+        "valueLoss": 15.308678082832703,
+        "entropy": 3.525308755291172,
+        "approximateKl": -0.0004109620129446783,
+        "clipFraction": 0,
+        "gradientNorm": 9.719163131266784,
+        "updates": 4,
+        "explainedVariance": -0.01577357714943317
+      },
+      "checkpoint": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json",
+      "bestPolicySaved": false,
+      "stage": {
+        "id": "05_boss",
+        "label": "Boss 战斗",
+        "scene": "auto"
+      },
+      "trainingMetrics": {
+        "iteration": 5,
+        "stage": "05_boss",
+        "stageLabel": "Boss 战斗",
+        "stageShort": "S5",
+        "episodeReward": -15.944500000000009,
+        "actorLoss": -0.0030792643697523867,
+        "criticLoss": 15.308678082832703,
+        "policyEntropy": 3.525308755291172,
+        "approxKl": -0.0004109620129446783,
+        "clipFraction": 0,
+        "explainedVariance": -0.01577357714943317,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0,
+        "damageDealt": 79,
+        "damageTaken": 12,
+        "damageBearingFireDecisionRate": 0.06451612903225806,
+        "testClearRate": 0,
+        "testMeanEpisodeReward": 4.590499999999997,
+        "testMeanDamageDealt": 37,
+        "testMeanDamageTaken": 4.5,
+        "testDamageBearingFireDecisionRate": 0.07535885167464115
+      },
+      "heldOutEvaluation": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.375,
+        "truncationRate": 0.625,
+        "meanEpisodeReward": 4.590499999999997,
+        "meanDamageDealt": 37,
+        "meanDamageTaken": 4.5,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.07535885167464115,
+        "totalFiringDecisions": 836,
+        "totalDamageBearingFireDecisions": 63
+      }
+    },
+    {
+      "iteration": 6,
+      "globalSteps": 1536,
+      "globalFrames": 6138,
+      "completedEpisodes": 10,
+      "roomsCleared": 0,
+      "deaths": 6,
+      "bestMeanEpisodeReward": 31.399999999999963,
+      "rollout": {
+        "decisions": 256,
+        "rewardSum": 7.975999999999997,
+        "meanRewardPerDecision": 0.03115624999999999,
+        "damageDealt": 69,
+        "damageTaken": 7,
+        "firingDecisions": 194,
+        "damageBearingFireDecisions": 10,
+        "damageBearingFireDecisionRate": 0.05154639175257732,
+        "framesAdvanced": 1024,
+        "terminatedCount": 1,
+        "truncatedCount": 1,
+        "episodeRewards": [
+          1.3999999999999986,
+          6.580000000000005
+        ],
+        "episodeSummaries": [
+          {
+            "reward": 1.3999999999999986,
+            "cleared": false,
+            "dead": false,
+            "terminated": false,
+            "truncated": true,
+            "decisions": 150,
+            "frames": 600,
+            "clearTimeFrames": null,
+            "damageDealt": 7,
+            "damageTaken": 1,
+            "firingDecisions": 115,
+            "damageBearingFireDecisions": 2,
+            "damageBearingFireDecisionRate": 0.017391304347826087
+          },
+          {
+            "reward": 6.580000000000005,
+            "cleared": false,
+            "dead": true,
+            "terminated": true,
+            "truncated": false,
+            "decisions": 105,
+            "frames": 420,
+            "clearTimeFrames": null,
+            "damageDealt": 62,
+            "damageTaken": 6,
+            "firingDecisions": 78,
+            "damageBearingFireDecisions": 8,
+            "damageBearingFireDecisionRate": 0.10256410256410256
+          }
+        ],
+        "meanEpisodeReward": 3.990000000000002,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0
+      },
+      "update": {
+        "policyLoss": -0.011193617082803751,
+        "valueLoss": 5.096780006954222,
+        "entropy": 3.487904264561652,
+        "approximateKl": -0.000535269652157954,
+        "clipFraction": 0.0009765625,
+        "gradientNorm": 3.5319184537331463,
+        "updates": 4,
+        "explainedVariance": -0.005156889724086788
+      },
+      "checkpoint": "D:\\Gamebot\\gamebot-training-engine-v0.1\\training-results\\ppo-v0.3.2-first-run\\checkpoints\\latest-training.json",
+      "bestPolicySaved": false,
+      "stage": {
+        "id": "06_mixed",
+        "label": "混合场景",
+        "scene": "auto"
+      },
+      "trainingMetrics": {
+        "iteration": 6,
+        "stage": "06_mixed",
+        "stageLabel": "混合场景",
+        "stageShort": "S6",
+        "episodeReward": 3.990000000000002,
+        "actorLoss": -0.011193617082803751,
+        "criticLoss": 5.096780006954222,
+        "policyEntropy": 3.487904264561652,
+        "approxKl": -0.000535269652157954,
+        "clipFraction": 0.0009765625,
+        "explainedVariance": -0.005156889724086788,
+        "roomClearRate": 0,
+        "cumulativeRoomClearRate": 0,
+        "damageDealt": 69,
+        "damageTaken": 7,
+        "damageBearingFireDecisionRate": 0.05154639175257732,
+        "testClearRate": 0,
+        "testMeanEpisodeReward": 4.149250000000005,
+        "testMeanDamageDealt": 34.6875,
+        "testMeanDamageTaken": 4.125,
+        "testDamageBearingFireDecisionRate": 0.06432038834951456
+      },
+      "heldOutEvaluation": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.375,
+        "truncationRate": 0.625,
+        "meanEpisodeReward": 4.149250000000005,
+        "meanDamageDealt": 34.6875,
+        "meanDamageTaken": 4.125,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.06432038834951456,
+        "totalFiringDecisions": 824,
+        "totalDamageBearingFireDecisions": 53
+      }
+    }
+  ]
+}

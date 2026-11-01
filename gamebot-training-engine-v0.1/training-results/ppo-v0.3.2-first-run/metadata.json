@@ -1,0 +1,91 @@
+{
+  "schema": "gamebot-ppo-pilot/1",
+  "createdAt": "2026-11-01T04:04:25.651Z",
+  "actionRepeat": 4,
+  "maxStepsPerEpisode": 600,
+  "trainingSeeds": [
+    "3JY1 6FLR",
+    "7W3L P1Z9",
+    "SWGF G7WV"
+  ],
+  "heldOutTestSeeds": [
+    "WE4Y Y4DM",
+    "F2HZ 6ZVD"
+  ],
+  "heldOutTestScenes": [
+    "gurdyJr",
+    "larryJr",
+    "dukeOfFlies",
+    "theBloat"
+  ],
+  "curriculum": [
+    {
+      "id": "01_stationary_aim_proxy",
+      "label": "静止目标瞄准近似",
+      "scene": "gurdyJr"
+    },
+    {
+      "id": "02_moving_target",
+      "label": "移动目标瞄准",
+      "scene": "larryJr"
+    },
+    {
+      "id": "03_projectile_dodge",
+      "label": "弹幕躲避",
+      "scene": "theBloat"
+    },
+    {
+      "id": "04_multi_enemy",
+      "label": "多敌人组合",
+      "scene": "dukeOfFlies"
+    },
+    {
+      "id": "05_boss",
+      "label": "Boss 战斗",
+      "scene": "auto"
+    },
+    {
+      "id": "06_mixed",
+      "label": "混合场景",
+      "scene": "auto"
+    }
+  ],
+  "actionSpace": {
+    "move": [
+      "none",
+      "up",
+      "up_right",
+      "right",
+      "down_right",
+      "down",
+      "down_left",
+      "left",
+      "up_left"
+    ],
+    "fire": [
+      "none",
+      "up",
+      "right",
+      "down",
+      "left"
+    ]
+  },
+  "changedRewardFunction": false,
+  "observationOrActionSchemaChanged": false,
+  "hitRateMetric": "damageBearingFireDecisionRate = decision intervals with enemy HP reduction and fire != none / fire decision intervals; an action-level proxy, not projectile accuracy",
+  "trainingConfig": {
+    "learningRate": 0.0003,
+    "gamma": 0.999,
+    "gaeLambda": 0.95,
+    "clipRange": 0.2,
+    "updateEpochs": 4,
+    "minibatchSize": 256,
+    "entropyCoefficient": 0.005,
+    "valueCoefficient": 0.5,
+    "maxGradNorm": 0.5,
+    "rolloutSteps": 256
+  },
+  "totalTrainingDecisions": 1536,
+  "totalTrainingFrames": 6138,
+  "completedTrainingEpisodes": 10
+}

@@ -1,0 +1,561 @@
+{
+  "metadata": {
+    "schema": "gamebot-ppo-pilot/1",
+    "createdAt": "2026-11-01T04:04:25.651Z",
+    "actionRepeat": 4,
+    "maxStepsPerEpisode": 600,
+    "trainingSeeds": [
+      "3JY1 6FLR",
+      "7W3L P1Z9",
+      "SWGF G7WV"
+    ],
+    "heldOutTestSeeds": [
+      "WE4Y Y4DM",
+      "F2HZ 6ZVD"
+    ],
+    "heldOutTestScenes": [
+      "gurdyJr",
+      "larryJr",
+      "dukeOfFlies",
+      "theBloat"
+    ],
+    "curriculum": [
+      {
+        "id": "01_stationary_aim_proxy",
+        "label": "静止目标瞄准近似",
+        "scene": "gurdyJr"
+      },
+      {
+        "id": "02_moving_target",
+        "label": "移动目标瞄准",
+        "scene": "larryJr"
+      },
+      {
+        "id": "03_projectile_dodge",
+        "label": "弹幕躲避",
+        "scene": "theBloat"
+      },
+      {
+        "id": "04_multi_enemy",
+        "label": "多敌人组合",
+        "scene": "dukeOfFlies"
+      },
+      {
+        "id": "05_boss",
+        "label": "Boss 战斗",
+        "scene": "auto"
+      },
+      {
+        "id": "06_mixed",
+        "label": "混合场景",
+        "scene": "auto"
+      }
+    ],
+    "actionSpace": {
+      "move": [
+        "none",
+        "up",
+        "up_right",
+        "right",
+        "down_right",
+        "down",
+        "down_left",
+        "left",
+        "up_left"
+      ],
+      "fire": [
+        "none",
+        "up",
+        "right",
+        "down",
+        "left"
+      ]
+    },
+    "changedRewardFunction": false,
+    "observationOrActionSchemaChanged": false,
+    "hitRateMetric": "damageBearingFireDecisionRate = decision intervals with enemy HP reduction and fire != none / fire decision intervals; an action-level proxy, not projectile accuracy",
+    "trainingConfig": {
+      "learningRate": 0.0003,
+      "gamma": 0.999,
+      "gaeLambda": 0.95,
+      "clipRange": 0.2,
+      "updateEpochs": 4,
+      "minibatchSize": 256,
+      "entropyCoefficient": 0.005,
+      "valueCoefficient": 0.5,
+      "maxGradNorm": 0.5,
+      "rolloutSteps": 256
+    },
+    "totalTrainingDecisions": 1536,
+    "totalTrainingFrames": 6138,
+    "completedTrainingEpisodes": 10
+  },
+  "baselines": [
+    {
+      "policy": "random",
+      "stage": "baseline",
+      "summary": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.25,
+        "truncationRate": 0.75,
+        "meanEpisodeReward": 3.2186250000000047,
+        "meanDamageDealt": 31.875,
+        "meanDamageTaken": 4.375,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.05841121495327103,
+        "totalFiringDecisions": 856,
+        "totalDamageBearingFireDecisions": 50
+      },
+      "episodes": [
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "gurdyJr",
+          "roomVariant": 3280,
+          "episodeReward": 12.400000000000027,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 38,
+          "damageTaken": 5,
+          "firingDecisions": 126,
+          "damageBearingFireDecisions": 7,
+          "damageBearingFireDecisionRate": 0.05555555555555555,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 49,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "14.0.0",
+            "99.0.0"
+          ]
+        },
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "larryJr",
+          "roomVariant": 1020,
+          "episodeReward": 15.900000000000013,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 31.5,
+          "damageTaken": 3,
+          "firingDecisions": 125,
+          "damageBearingFireDecisions": 8,
+          "damageBearingFireDecisionRate": 0.064,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "19.0.0"
+          ]
+        },
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "dukeOfFlies",
+          "roomVariant": 2010,
+          "episodeReward": 33.4,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 54,
+          "damageTaken": 4,
+          "firingDecisions": 121,
+          "damageBearingFireDecisions": 9,
+          "damageBearingFireDecisionRate": 0.0743801652892562,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "18.0.0",
+            "67.0.0"
+          ]
+        },
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "theBloat",
+          "roomVariant": 3300,
+          "episodeReward": -48.34999999999997,
+          "cleared": false,
+          "dead": true,
+          "terminated": true,
+          "truncated": false,
+          "decisions": 88,
+          "frames": 350,
+          "clearTimeFrames": null,
+          "damageDealt": 7,
+          "damageTaken": 6,
+          "firingDecisions": 78,
+          "damageBearingFireDecisions": 2,
+          "damageBearingFireDecisionRate": 0.02564102564102564,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 15,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "68.1.0",
+            "68.11.0"
+          ]
+        },
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "gurdyJr",
+          "roomVariant": 3280,
+          "episodeReward": 13.400000000000041,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 29,
+          "damageTaken": 3,
+          "firingDecisions": 115,
+          "damageBearingFireDecisions": 4,
+          "damageBearingFireDecisionRate": 0.034782608695652174,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 22,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "14.0.0",
+            "99.0.0"
+          ]
+        },
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "larryJr",
+          "roomVariant": 1020,
+          "episodeReward": 12.400000000000006,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 28,
+          "damageTaken": 3,
+          "firingDecisions": 115,
+          "damageBearingFireDecisions": 7,
+          "damageBearingFireDecisionRate": 0.06086956521739131,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "19.0.0"
+          ]
+        },
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "dukeOfFlies",
+          "roomVariant": 2010,
+          "episodeReward": 38.39999999999997,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 64,
+          "damageTaken": 5,
+          "firingDecisions": 112,
+          "damageBearingFireDecisions": 12,
+          "damageBearingFireDecisionRate": 0.10714285714285714,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "18.0.0",
+            "67.0.0"
+          ]
+        },
+        {
+          "policy": "random",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "theBloat",
+          "roomVariant": 3300,
+          "episodeReward": -51.801000000000045,
+          "cleared": false,
+          "dead": true,
+          "terminated": true,
+          "truncated": false,
+          "decisions": 76,
+          "frames": 301,
+          "clearTimeFrames": null,
+          "damageDealt": 3.5,
+          "damageTaken": 6,
+          "firingDecisions": 64,
+          "damageBearingFireDecisions": 1,
+          "damageBearingFireDecisionRate": 0.015625,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 2,
+          "laserDecisions": 36,
+          "observedEnemyTypes": [
+            "68.1.0",
+            "68.11.0"
+          ]
+        }
+      ]
+    },
+    {
+      "policy": "untrained-actor",
+      "stage": "baseline",
+      "summary": {
+        "episodes": 8,
+        "roomClearRate": 0,
+        "deathRate": 0.375,
+        "truncationRate": 0.625,
+        "meanEpisodeReward": -4.268249999999991,
+        "meanDamageDealt": 29.375,
+        "meanDamageTaken": 4.75,
+        "meanClearTimeFrames": null,
+        "damageBearingFireDecisionRate": 0.06342780026990553,
+        "totalFiringDecisions": 741,
+        "totalDamageBearingFireDecisions": 47
+      },
+      "episodes": [
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "gurdyJr",
+          "roomVariant": 3280,
+          "episodeReward": -2.599999999999984,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 8,
+          "damageTaken": 2,
+          "firingDecisions": 100,
+          "damageBearingFireDecisions": 1,
+          "damageBearingFireDecisionRate": 0.01,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 20,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "14.0.0",
+            "99.0.0"
+          ]
+        },
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "larryJr",
+          "roomVariant": 1020,
+          "episodeReward": -1.0999999999999495,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 24.5,
+          "damageTaken": 5,
+          "firingDecisions": 111,
+          "damageBearingFireDecisions": 4,
+          "damageBearingFireDecisionRate": 0.036036036036036036,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "19.0.0"
+          ]
+        },
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "dukeOfFlies",
+          "roomVariant": 2010,
+          "episodeReward": 52.90000000000001,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 73.5,
+          "damageTaken": 4,
+          "firingDecisions": 110,
+          "damageBearingFireDecisions": 14,
+          "damageBearingFireDecisionRate": 0.12727272727272726,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "18.0.0",
+            "67.0.0"
+          ]
+        },
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "WE4Y Y4DM",
+          "scene": "theBloat",
+          "roomVariant": 3300,
+          "episodeReward": -48.25099999999999,
+          "cleared": false,
+          "dead": true,
+          "terminated": true,
+          "truncated": false,
+          "decisions": 63,
+          "frames": 251,
+          "clearTimeFrames": null,
+          "damageDealt": 7,
+          "damageTaken": 6,
+          "firingDecisions": 48,
+          "damageBearingFireDecisions": 2,
+          "damageBearingFireDecisionRate": 0.041666666666666664,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 6,
+          "laserDecisions": 21,
+          "observedEnemyTypes": [
+            "68.1.0",
+            "68.11.0"
+          ]
+        },
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "gurdyJr",
+          "roomVariant": 3280,
+          "episodeReward": -14.919999999999991,
+          "cleared": false,
+          "dead": true,
+          "terminated": true,
+          "truncated": false,
+          "decisions": 105,
+          "frames": 420,
+          "clearTimeFrames": null,
+          "damageDealt": 40.5,
+          "damageTaken": 6,
+          "firingDecisions": 65,
+          "damageBearingFireDecisions": 7,
+          "damageBearingFireDecisionRate": 0.1076923076923077,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 47,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "14.0.0",
+            "99.0.0"
+          ]
+        },
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "larryJr",
+          "roomVariant": 1020,
+          "episodeReward": -4.599999999999941,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 21,
+          "damageTaken": 5,
+          "firingDecisions": 109,
+          "damageBearingFireDecisions": 6,
+          "damageBearingFireDecisionRate": 0.05504587155963303,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "19.0.0"
+          ]
+        },
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "dukeOfFlies",
+          "roomVariant": 2010,
+          "episodeReward": 36.400000000000006,
+          "cleared": false,
+          "dead": false,
+          "terminated": false,
+          "truncated": true,
+          "decisions": 150,
+          "frames": 600,
+          "clearTimeFrames": null,
+          "damageDealt": 57,
+          "damageTaken": 4,
+          "firingDecisions": 111,
+          "damageBearingFireDecisions": 12,
+          "damageBearingFireDecisionRate": 0.10810810810810811,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 0,
+          "laserDecisions": 0,
+          "observedEnemyTypes": [
+            "18.0.0",
+            "67.0.0"
+          ]
+        },
+        {
+          "policy": "untrained-actor",
+          "evaluationStage": "baseline",
+          "seed": "F2HZ 6ZVD",
+          "scene": "theBloat",
+          "roomVariant": 3300,
+          "episodeReward": -51.975000000000094,
+          "cleared": false,
+          "dead": true,
+          "terminated": true,
+          "truncated": false,
+          "decisions": 119,
+          "frames": 475,
+          "clearTimeFrames": null,
+          "damageDealt": 3.5,
+          "damageTaken": 6,
+          "firingDecisions": 87,
+          "damageBearingFireDecisions": 1,
+          "damageBearingFireDecisionRate": 0.011494252873563218,
+          "actualProjectileHitRate": null,
+          "enemyProjectileDecisions": 9,
+          "laserDecisions": 37,
+          "observedEnemyTypes": [
+            "68.1.0",
+            "68.11.0"
+          ]
+        }
+      ]
+    }
+  ]
+}

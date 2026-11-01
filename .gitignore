@@ -1,0 +1,11 @@
+# Local run artifacts and the original duplicate archive
+gamebot-training-engine-v0.1/runs/
+gamebot-training-engine-v0.1/evidence/latest-benchmark.json
+/gamebot-training-engine-v0.1.zip
+
+# Local dependencies and credentials
+node_modules/
+.env
+.env.*
+!.env.example
+*.log

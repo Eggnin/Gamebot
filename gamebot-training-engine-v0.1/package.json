@@ -1,0 +1,16 @@
+{
+  "name": "gamebot-training-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test tests/action-contract.test.mjs",
+    "serve": "node src/stdio_server.mjs",
+    "train": "node scripts/train_ppo.mjs",
+    "pilot": "node scripts/run_ppo_v032_pilot.mjs",
+    "continue-pilot": "node scripts/continue_ppo_v032.mjs",
+    "smoke": "node scripts/protocol_smoke.mjs",
+    "bench": "node scripts/bench_parallel.mjs"
+  }
+}
