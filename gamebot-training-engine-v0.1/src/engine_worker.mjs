@@ -1788,6 +1788,13 @@ process.on('message', message => {
       import(pathToFileURL(join(config.research, 'external-validation', 'truth.mjs')).href).then(({captureTruth}) => {
         send({id:message.id,result:captureTruth(module,readObservation(module))});
       }).catch(error => send({id:message.id,error:error.stack??error.message}));
+    } else if (message.command === 'externalAddress' && config.externalValidation === true) {
+      // Address only: no planner frame is built, so a transient non-finite
+      // entity field in the game state cannot abort a training episode.
+      if (!active || !resume || pendingStep) throw new Error('engine is not stopped at a logic boundary');
+      import(pathToFileURL(join(config.research, 'external-validation', 'address.mjs')).href).then(({captureAddress}) => {
+        send({id:message.id,result:captureAddress(module)});
+      }).catch(error => send({id:message.id,error:error.stack??error.message}));
     } else if (message.command === 'peek') {
       if (!active || !resume) throw new Error('engine is not waiting at a logic boundary');
       send({ id: message.id, result: readObservation(module) });

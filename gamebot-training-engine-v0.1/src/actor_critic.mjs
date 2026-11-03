@@ -18,7 +18,13 @@ const MAX_ENEMIES = 8;
 const ENEMY_FEATURES = 9;
 const MAX_PROJECTILES = 16;
 const PROJECTILE_FEATURES = 8;
-const PLAYER_INPUTS = 8;
+const PLAYER_BASE_INPUTS = 8;
+// Previous applied action, one-hot per head. MPC decisions have strong temporal
+// continuity (it reuses its previous plan); a single-frame policy cannot see
+// that, so the context vector carries it without changing the action space.
+const CONTEXT_INPUTS = MOVE_ACTIONS.length + FIRE_ACTIONS.length;
+const PLAYER_INPUTS = PLAYER_BASE_INPUTS + CONTEXT_INPUTS;
+export const CONTEXT_LAYOUT = Object.freeze({offset: PLAYER_BASE_INPUTS, size: CONTEXT_INPUTS});
 const ENEMY_INPUTS = 1 + MAX_ENEMIES * ENEMY_FEATURES;
 const PROJECTILE_INPUTS = 1 + MAX_PROJECTILES * PROJECTILE_FEATURES;
 const TERRAIN_INPUTS = GRID_WIDTH * GRID_HEIGHT * 4 + 4;
@@ -61,8 +67,28 @@ function normalizeEntities(entities, player, limit, featureCount, encode) {
   return values;
 }
 
-/** Convert the variable-length game observation into four fixed-size inputs. */
-export function encodeObservation(observation) {
+function resolveContextIndex(value, lookup, size, name) {
+  const index = typeof value === 'number' ? value : lookup.get(String(value ?? 'none'));
+  if (!Number.isInteger(index) || index < 0 || index >= size) {
+    throw new TypeError(`${name} context must be one of: ${[...lookup.keys()].join(', ')}`);
+  }
+  return index;
+}
+
+/** One-hot encoding of the previously applied action; absent context means none/none. */
+function contextFeatures(context) {
+  const moveIndex = context === null || context === undefined ? 0
+    : resolveContextIndex(context.move ?? context.previousMove ?? 'none', MOVE_INDEX, MOVE_ACTIONS.length, 'move');
+  const fireIndex = context === null || context === undefined ? 0
+    : resolveContextIndex(context.fire ?? context.previousFire ?? 'none', FIRE_INDEX, FIRE_ACTIONS.length, 'fire');
+  const features = new Float64Array(CONTEXT_INPUTS);
+  features[moveIndex] = 1;
+  features[MOVE_ACTIONS.length + fireIndex] = 1;
+  return features;
+}
+
+/** Convert the variable-length game observation into the fixed-size player input. */
+export function encodeObservation(observation, context = null) {
   if (!observation || typeof observation !== 'object' || Array.isArray(observation)) {
     throw new TypeError('observation must be an object');
   }
@@ -72,7 +98,8 @@ export function encodeObservation(observation) {
     x: finite(playerObservation.position?.x),
     y: finite(playerObservation.position?.y),
   };
-  const playerFeatures = new Float64Array([
+  const playerFeatures = new Float64Array(PLAYER_INPUTS);
+  playerFeatures.set([
     clamp(player.x / ARENA_WIDTH, -1, 2),
     clamp(player.y / ARENA_HEIGHT, -1, 2),
     clamp(finite(playerObservation.velocity?.x) / 10, -3, 3),
@@ -81,7 +108,8 @@ export function encodeObservation(observation) {
     clamp(finite(playerObservation.fireDelay) / 30, 0, 4),
     clamp(finite(playerObservation.damageCooldown) / 60, 0, 4),
     playerObservation.controls === true ? 1 : 0,
-  ]);
+  ], 0);
+  playerFeatures.set(contextFeatures(context), PLAYER_BASE_INPUTS);
 
   const entities = Array.isArray(observation.entities) ? observation.entities : [];
   const enemies = entities.filter(entity =>
@@ -189,6 +217,14 @@ function backwardLayer(layer, input, output, outputGradient, gradient, activatio
   return inputGradient;
 }
 
+function argmax(values) {
+  let best = 0;
+  for (let index = 1; index < values.length; index++) {
+    if (values[index] > values[best]) best = index;
+  }
+  return best;
+}
+
 function softmax(logits) {
   let maximum = -Infinity;
   for (const value of logits) maximum = Math.max(maximum, value);
@@ -273,7 +309,8 @@ export class ActorCriticNetwork {
 
   static get architecture() {
     return Object.freeze({
-      inputs: Object.freeze({ player: PLAYER_INPUTS, enemies: ENEMY_INPUTS, projectiles: PROJECTILE_INPUTS, terrain: TERRAIN_INPUTS }),
+      inputs: Object.freeze({ player: PLAYER_INPUTS, context: CONTEXT_INPUTS,
+        enemies: ENEMY_INPUTS, projectiles: PROJECTILE_INPUTS, terrain: TERRAIN_INPUTS }),
       featureEncoders: Object.freeze({ player: 24, enemies: 48, projectiles: 48, terrain: 48 }),
       sharedEncoder: Object.freeze([128, 96]),
       actor: Object.freeze({ move: MOVE_ACTIONS.length, fire: FIRE_ACTIONS.length }),
@@ -281,8 +318,7 @@ export class ActorCriticNetwork {
     });
   }
 
-  #forward(observation) {
-    const encoded = encodeObservation(observation);
+  #forwardEncoded(encoded) {
     const inputs = [encoded.player, encoded.enemies, encoded.projectiles, encoded.terrain];
     const embeddings = inputs.map((input, index) => forwardLayer(this.layers[index], input));
     const merged = new Float64Array(168);
@@ -303,13 +339,28 @@ export class ActorCriticNetwork {
     };
   }
 
+  #forward(observation, context = null) {
+    return this.#forwardEncoded(encodeObservation(observation, context));
+  }
+
   /** Return both independent action distributions and the state value V(s). */
-  forward(observation) {
-    const result = this.#forward(observation);
+  forward(observation, {context = null} = {}) {
+    const result = this.#forward(observation, context);
     return {
       moveLogits: Array.from(result.moveLogits),
       moveProbabilities: Array.from(result.moveProbabilities),
       fireLogits: Array.from(result.fireLogits),
+      fireProbabilities: Array.from(result.fireProbabilities),
+      value: result.value,
+    };
+  }
+
+  /** Forward pass on a pre-encoded observation (see encodeObservation); this
+   * avoids re-encoding long datasets during evaluation. */
+  scoreEncoded(encoded) {
+    const result = this.#forwardEncoded(encoded);
+    return {
+      moveProbabilities: Array.from(result.moveProbabilities),
       fireProbabilities: Array.from(result.fireProbabilities),
       value: result.value,
     };
@@ -337,8 +388,8 @@ export class ActorCriticNetwork {
   }
 
   /** Sample each head independently; both selected controls are executed together. */
-  act(observation, { deterministic = false } = {}) {
-    const result = this.#forward(observation);
+  act(observation, { deterministic = false, context = null } = {}) {
+    const result = this.#forward(observation, context);
     const select = probabilities => {
       if (deterministic) {
         let best = 0;
@@ -359,11 +410,11 @@ export class ActorCriticNetwork {
   }
 
   /** Score a supplied pair of actions under the factorized joint policy. */
-  evaluateActions(observation, action) {
+  evaluateActions(observation, action, {context = null} = {}) {
     if (!action || typeof action !== 'object') throw new TypeError('action must contain move and fire');
     const moveIndex = resolveActionIndex(action.move, MOVE_ACTIONS, MOVE_INDEX, 'move');
     const fireIndex = resolveActionIndex(action.fire, FIRE_ACTIONS, FIRE_INDEX, 'fire');
-    return this.#distributionResult(this.#forward(observation), moveIndex, fireIndex);
+    return this.#distributionResult(this.#forward(observation, context), moveIndex, fireIndex);
   }
 
   #accumulateSampleGradients(cache, moveGradient, fireGradient, valueGradient, gradients) {
@@ -531,6 +582,156 @@ export class ActorCriticNetwork {
     return metrics;
   }
 
+  /**
+   * Supervised (behavior cloning) update on expert rows of the form
+   * { observation, action: { move, fire }, weight?, valueTarget? }.
+   * Both heads use categorical cross-entropy on the expert label and share the
+   * same encoder/trunk and Adam state as updatePPO(). The critic is only
+   * trained when a finite valueTarget and valueCoefficient > 0 are supplied.
+   */
+  updateSupervised(transitions, options = {}) {
+    if (!Array.isArray(transitions) || transitions.length === 0) {
+      throw new TypeError('transitions must be a non-empty array');
+    }
+    const epochs = options.epochs ?? 3;
+    const batchSize = options.batchSize ?? 256;
+    if (!Number.isInteger(epochs) || epochs < 1) throw new RangeError('epochs must be a positive integer');
+    if (!Number.isInteger(batchSize) || batchSize < 1) throw new RangeError('batchSize must be a positive integer');
+    const learningRate = finiteOption(options.learningRate, 1e-3, 'learningRate');
+    const entropyCoefficient = finiteOption(options.entropyCoefficient, 0, 'entropyCoefficient');
+    const valueCoefficient = finiteOption(options.valueCoefficient, 0, 'valueCoefficient');
+    const maxGradNorm = finiteOption(options.maxGradNorm, 0.5, 'maxGradNorm');
+    const contextDropout = finiteOption(options.contextDropout, 0, 'contextDropout');
+    if (contextDropout > 1) throw new RangeError('contextDropout must be between 0 and 1');
+    const beta1 = finiteOption(options.beta1, 0.9, 'beta1');
+    const beta2 = finiteOption(options.beta2, 0.999, 'beta2');
+    const epsilon = finiteOption(options.epsilon, 1e-8, 'epsilon');
+    if (beta1 >= 1 || beta2 >= 1) throw new RangeError('beta1 and beta2 must be less than 1');
+
+    const rows = transitions.map((transition, index) => {
+      const action = transition?.action ?? transition;
+      const moveValue = action?.move ?? transition?.moveIndex;
+      const fireValue = action?.fire ?? transition?.fireIndex;
+      const weight = finite(transition?.weight, 1);
+      if (!Number.isFinite(weight) || weight < 0) {
+        throw new TypeError(`transition ${index} weight must be a finite number >= 0`);
+      }
+      const valueTarget = finite(transition?.valueTarget ?? transition?.return, NaN);
+      return {
+        observation: transition.observation,
+        encoded: transition?.encoded ?? null,
+        moveIndex: resolveActionIndex(moveValue, MOVE_ACTIONS, MOVE_INDEX, `transition ${index} move`),
+        fireIndex: resolveActionIndex(fireValue, FIRE_ACTIONS, FIRE_INDEX, `transition ${index} fire`),
+        weight,
+        valueTarget,
+      };
+    });
+
+    const moveClassWeightsOption = options.moveClassWeights ?? null;
+    const fireClassWeightsOption = options.fireClassWeights ?? null;
+    const checkClassWeights = (weights, size, name) => {
+      if (weights === null || weights === undefined) return null;
+      if (!Array.isArray(weights) && !(weights instanceof Float64Array)) {
+        throw new TypeError(`${name} must be an array of ${size} weights`);
+      }
+      if (weights.length !== size) throw new TypeError(`${name} must have ${size} entries`);
+      return Array.from(weights).map((value, index) => {
+        const number = finite(value, NaN);
+        if (!Number.isFinite(number) || number < 0) throw new TypeError(`${name}[${index}] must be finite and >= 0`);
+        return number;
+      });
+    };
+    const moveClassWeights = checkClassWeights(moveClassWeightsOption, MOVE_ACTIONS.length, 'moveClassWeights');
+    const fireClassWeights = checkClassWeights(fireClassWeightsOption, FIRE_ACTIONS.length, 'fireClassWeights');
+
+    const metrics = {
+      moveLoss: 0, fireLoss: 0, valueLoss: 0,
+      moveAccuracy: 0, fireAccuracy: 0, jointAccuracy: 0,
+      moveEntropy: 0, fireEntropy: 0,
+      gradientNorm: 0, updates: 0, samples: 0,
+    };
+    let totalMoveWeight = 0;
+    let totalFireWeight = 0;
+
+    for (let epoch = 0; epoch < epochs; epoch++) {
+      const order = Array.from({ length: rows.length }, (_, index) => index);
+      for (let index = order.length - 1; index > 0; index--) {
+        const swap = Math.floor(this.rng.next() * (index + 1));
+        [order[index], order[swap]] = [order[swap], order[index]];
+      }
+
+      for (let start = 0; start < order.length; start += batchSize) {
+        const batch = order.slice(start, start + batchSize).map(index => rows[index]);
+        const gradients = zeroGradients(this.layers);
+        const inverseBatchSize = 1 / batch.length;
+        for (const row of batch) {
+          let encoded = row.encoded;
+          if (encoded && contextDropout > 0 && this.rng.next() < contextDropout) {
+            // Context dropout: replace the previous-action one-hot with the
+            // "none/none" pattern. This stops the network from using the
+            // previous action as a shortcut ("echo") that collapses in closed
+            // loop while still letting it use the context when present.
+            const player = new Float64Array(encoded.player);
+            for (let index = 0; index < CONTEXT_LAYOUT.size; index++) player[CONTEXT_LAYOUT.offset + index] = 0;
+            player[CONTEXT_LAYOUT.offset] = 1;
+            player[CONTEXT_LAYOUT.offset + MOVE_ACTIONS.length] = 1;
+            encoded = {...encoded, player};
+          }
+          const cache = encoded ? this.#forwardEncoded(encoded) : this.#forward(row.observation);
+          const moveStats = categoricalStats(cache.moveProbabilities);
+          const fireStats = categoricalStats(cache.fireProbabilities);
+
+          const moveSampleWeight = row.weight * (moveClassWeights ? moveClassWeights[row.moveIndex] : 1);
+          const fireSampleWeight = row.weight * (fireClassWeights ? fireClassWeights[row.fireIndex] : 1);
+          const moveGradient = makeGradVector(
+            cache.moveProbabilities, row.moveIndex, -moveSampleWeight * inverseBatchSize,
+            entropyCoefficient * inverseBatchSize);
+          const fireGradient = makeGradVector(
+            cache.fireProbabilities, row.fireIndex, -fireSampleWeight * inverseBatchSize,
+            entropyCoefficient * inverseBatchSize);
+
+          let valueGradient = 0;
+          let valueLoss = 0;
+          if (valueCoefficient > 0 && Number.isFinite(row.valueTarget)) {
+            const difference = cache.value - row.valueTarget;
+            valueLoss = 0.5 * valueCoefficient * difference * difference;
+            valueGradient = valueCoefficient * difference * inverseBatchSize;
+          }
+
+          this.#accumulateSampleGradients(cache, moveGradient, fireGradient, valueGradient, gradients);
+
+          metrics.moveLoss += -moveStats.logProbabilities[row.moveIndex] * moveSampleWeight;
+          metrics.fireLoss += -fireStats.logProbabilities[row.fireIndex] * fireSampleWeight;
+          metrics.valueLoss += valueLoss;
+          metrics.moveEntropy += moveStats.entropy;
+          metrics.fireEntropy += fireStats.entropy;
+          metrics.moveAccuracy += argmax(cache.moveProbabilities) === row.moveIndex ? 1 : 0;
+          metrics.fireAccuracy += argmax(cache.fireProbabilities) === row.fireIndex ? 1 : 0;
+          metrics.jointAccuracy += argmax(cache.moveProbabilities) === row.moveIndex &&
+            argmax(cache.fireProbabilities) === row.fireIndex ? 1 : 0;
+          metrics.samples += 1;
+          totalMoveWeight += moveSampleWeight;
+          totalFireWeight += fireSampleWeight;
+        }
+        metrics.gradientNorm += this.#applyAdam(gradients, {
+          learningRate, beta1, beta2, epsilon, maxGradNorm,
+        });
+        metrics.updates++;
+      }
+    }
+
+    metrics.moveLoss /= Math.max(totalMoveWeight, 1e-9);
+    metrics.fireLoss /= Math.max(totalFireWeight, 1e-9);
+    metrics.valueLoss /= Math.max(totalMoveWeight, 1e-9);
+    metrics.moveAccuracy /= metrics.samples;
+    metrics.fireAccuracy /= metrics.samples;
+    metrics.jointAccuracy /= metrics.samples;
+    metrics.moveEntropy /= metrics.samples;
+    metrics.fireEntropy /= metrics.samples;
+    metrics.gradientNorm /= Math.max(metrics.updates, 1);
+    return metrics;
+  }
+
   toJSON() {
     return {
       format: MODEL_FORMAT,
@@ -564,9 +765,20 @@ export class ActorCriticNetwork {
     }
     const network = new ActorCriticNetwork({ seed: payload.rngState });
     if (payload.layers.length !== network.layers.length) throw new TypeError('checkpoint layer count does not match architecture');
+    let legacyContext = false;
     for (let index = 0; index < network.layers.length; index++) {
       const saved = payload.layers[index];
       const layer = network.layers[index];
+      if (index === 0 && saved.inputSize === PLAYER_BASE_INPUTS && saved.outputSize === layer.outputSize
+        && saved.weights?.length === PLAYER_BASE_INPUTS * layer.outputSize && saved.bias?.length === layer.outputSize) {
+        // Older checkpoints predate the previous-action context. Zero-padding the
+        // new input rows preserves their exact behaviour when context is absent.
+        layer.weights.fill(0);
+        layer.weights.set(saved.weights, 0);
+        layer.bias.set(saved.bias);
+        legacyContext = true;
+        continue;
+      }
       if (saved.inputSize !== layer.inputSize || saved.outputSize !== layer.outputSize
         || saved.weights?.length !== layer.weights.length || saved.bias?.length !== layer.bias.length) {
         throw new TypeError(`checkpoint layer ${index} shape does not match architecture`);
@@ -581,7 +793,17 @@ export class ActorCriticNetwork {
       for (let index = 0; index < network.layers.length; index++) {
         const saved = payload.optimizer.state[index];
         const state = network.optimizer.state[index];
+        const legacyLayer = index === 0 && legacyContext
+          && saved.weightsM?.length === PLAYER_BASE_INPUTS * network.layers[0].outputSize;
         for (const key of ['weightsM', 'weightsV', 'biasM', 'biasV']) {
+          if (legacyLayer && key.startsWith('weights')) {
+            if (saved[key].length !== state[key].length - CONTEXT_INPUTS * network.layers[0].outputSize) {
+              throw new TypeError(`checkpoint optimizer state ${index}.${key} has an invalid legacy shape`);
+            }
+            state[key].fill(0);
+            state[key].set(saved[key], 0);
+            continue;
+          }
           if (saved[key]?.length !== state[key].length) throw new TypeError(`checkpoint optimizer state ${index}.${key} has an invalid shape`);
           state[key].set(saved[key]);
         }

@@ -274,6 +274,11 @@ export class GamebotTrainingEnvironment {
     this.maxSteps = maxSteps;
     this.requestTimeoutMs = requestTimeoutMs;
     this.deferInitialSnapshot = options.deferInitialSnapshot === true;
+    // Opt-in external validation keeps the native Reader path available so an
+    // expert policy process can read the same engine memory the trainer sees.
+    // It only enables the worker's `externalTruth` command; training behaviour
+    // is unchanged when the flag is absent.
+    this.externalValidation = options.externalValidation === true;
     this.rewardWeights = { ...DEFAULT_REWARD, ...(options.rewardWeights ?? {}) };
     for (const [name, weight] of Object.entries(this.rewardWeights)) {
       if (!Number.isFinite(weight) || weight < 0) throw new RangeError(`reward weight ${name} must be a non-negative number`);
@@ -450,6 +455,7 @@ export class GamebotTrainingEnvironment {
       research: this.researchRoot,
       run,
       instance,
+      externalValidation: this.externalValidation,
     };
     this.runDirectory = run;
     this.episodeNumber = 0;
@@ -583,6 +589,14 @@ export class GamebotTrainingEnvironment {
     const raw = await this.#request('peek');
     this.rawObservation = raw;
     return publicObservation(raw);
+  }
+
+  // Additive transport for validation tooling. With `externalValidation: true`
+  // the worker answers `externalTruth`, which returns the live WASM heap
+  // address and an independently captured damage oracle for a native Reader.
+  // It never changes the observation or action contract used for training.
+  request(command, action) {
+    return this.#request(command, action);
   }
 
   async snapshot(label = '') {

@@ -5,12 +5,20 @@
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": {
-    "test": "node --test tests/action-contract.test.mjs",
+    "test": "node --test \"tests/*.test.mjs\"",
     "serve": "node src/stdio_server.mjs",
     "train": "node scripts/train_ppo.mjs",
+    "train-bc": "node scripts/train_bc.mjs",
+    "train-ppo-bc": "node scripts/train_ppo_from_bc.mjs",
+    "collect-dagger": "node scripts/collect_dagger.mjs",
+    "eval-policy": "node scripts/evaluate_policy.mjs",
+    "summarize-dataset": "node scripts/summarize_expert_dataset.mjs",
     "pilot": "node scripts/run_ppo_v032_pilot.mjs",
     "continue-pilot": "node scripts/continue_ppo_v032.mjs",
     "smoke": "node scripts/protocol_smoke.mjs",
-    "bench": "node scripts/bench_parallel.mjs"
+    "bench": "node scripts/bench_parallel.mjs",
+    "collect-expert": "node scripts/collect_expert_dataset.mjs",
+    "check-dataset": "node scripts/check_expert_dataset.mjs",
+    "verify-replay": "node scripts/verify_expert_replay.mjs"
   }
 }

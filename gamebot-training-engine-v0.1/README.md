@@ -168,6 +168,68 @@ npm run train -- --iterations=20 --resume=runs/ppo-checkpoints/latest-training.j
 
 从首跑的 latest checkpoint 继续 4 次混合场景更新、每轮评估同一 held-out 集，可运行 `npm run continue-pilot`。续训结果独立写到 `training-results/ppo-v0.3.2-continuation/`，不会覆盖首跑文件。
 
+## 专家策略数据采集（Phase 1）
+
+`scripts/collect_expert_dataset.mjs` 把现有 C++ 专家策略跑在同一个离线 J460 引擎里，逐帧记录 `(observation, expert action, transition outcome)`：
+
+- 专家不是新写的：`D:/Isaac/research/external-validation/ExternalReader.exe` 用生产 `Reader` 通过 `ReadProcessMemory` 读取本环境 WASM 堆；`reader_main.cpp` 新增 `policy:"mpc"`，走 `RealtimeMpcController → MpcCombatPlanner`，`policy:"quick"` 仍保留原 `Planner` 作为对照。
+- 训练侧新增两个纯增量接口：`GamebotTrainingEnvironment({ externalValidation: true })` 打开 worker 的 `externalAddress` / `externalTruth`；`env.request(command, action)` 暴露该传输。不改变 observation、action、reward 或 PPO 行为。
+- 每个 episode 用固定 scene + seed，第一帧检查 `expert.clock === observation.frame` 和玩家坐标一致，错位即中止该回合；记录每步的真实生命/敌人 HP 变化、reward、终止原因和专家诊断（MPC stats、SafetyGate、预测瞄准、攻击窗口、Shot progress）。
+
+```powershell
+node .\scripts\collect_expert_dataset.mjs --scenes=monstro,theBloat --seeds='3JY1 6FLR,7W3L P1Z9' --frames=900 --output=D:/Isaac/validation/expert-dataset-<date>
+node .\scripts\check_expert_dataset.mjs --dataset=D:/Isaac/validation/expert-dataset-<date>
+node .\scripts\verify_expert_replay.mjs --dataset=D:/Isaac/validation/expert-dataset-<date>
+```
+
+产物：`manifest.json`（参数、专家时钟、文件哈希、逐回合汇总）、`index.jsonl`、`episodes/<id>/samples.jsonl`、`episodes/<id>/episode.json`（结果、指标、专家统计、动作/观察链哈希）。`--diagnostics` 另写逐帧完整 Reader JSON。`--policy=quick` 用原 Planner 作对照。
+
+采集时会把专家二进制、worker、environment、`address.mjs` 和采集器自身复制到 `<dataset>/provenance/`，门禁校验归档副本：之后重新编译专家或改训练代码不会让已采数据失效。
+
+2026-11-03 实跑结果（数据保存在本机 `D:/Isaac/validation/expert-dataset-*`，报告见 [Phase 1 报告](D:/Isaac/validation/EXPERT-DATASET-PHASE1-20261103.md)）：
+
+| 数据集 | policy | 回合 | 帧 | 清房 | 掉血 | 门禁 | 重放 |
+| --- | --- | ---: | ---: | ---: | ---: | --- | --- |
+| `expert-dataset-20261103` | mpc | 12 | 10800 | 0 | 12 | 通过 | 10800/10800 帧一致 |
+| `expert-dataset-long-20261103` | mpc | 3 | 4966 | 3 | 1 | 通过 | 4966/4966 帧一致 |
+| `expert-dataset-quick-long-20261103` | quick | 3 | 5783 | 3 | 3 | - | - |
+
+MPC 长局 3/3 清房，比原 Planner 少 14% 帧数、少 2 点掉血；但 30 秒短局里原 Planner 掉血更少，说明 MPC 不是全面更强的教师。逐发命中率当前不能用 C++ 弹幕归因（在 30 Hz 桥接中失效），报告里改用"真实 HP 下降 ÷ 3.5 ÷ 弹幕数"的估算口径。
+
+`npm run collect-expert`、`npm run check-dataset`、`npm run verify-replay` 是同一组脚本的快捷入口。
+
+质量门禁检查 schema、时间对齐、动作域、生命/伤害记账、帧与观察链连续性、哈希和来源文件哈希；重放验证用同一 scene/seed 重放记录动作并逐帧比对观察哈希。任一失败都返回非零退出码。
+
+## Behavior Cloning（Phase 2）
+
+`scripts/train_bc.mjs` 在**同一个** `ActorCriticNetwork` 上用专家动作做监督学习：新增的 `updateSupervised()` 只对两个动作头做交叉熵，共享编码器/主干与 Adam 状态；`updatePPO()` 未改动。训练/验证/测试按**战斗种子**切分，脚本会拒绝训练种子出现在 val/test 的数据。
+
+```powershell
+node .\scripts\train_bc.mjs `
+  --train-datasets=D:/Isaac/validation/expert-dataset-20261103,D:/Isaac/validation/expert-dataset-long-20261103 `
+  --train-seeds='3JY1 6FLR' --val-dataset=D:/Isaac/validation/expert-dataset-20261103 --val-seeds='7W3L P1Z9' `
+  --test-dataset=D:/Isaac/validation/expert-dataset-heldout-20261103 --test-seeds='SWGF G7WV' `
+  --epochs=20 --output=D:/Isaac/validation/bc-balanced-20261103
+node .\scripts\evaluate_policy.mjs --policy=D:/Isaac/validation/bc-balanced-20261103/best-policy.json `
+  --scenes=monstro,theBloat,theCage,gurdyJr --seeds='SWGF G7WV' --frames=900 `
+  --compare-dataset=D:/Isaac/validation/expert-dataset-heldout-20261103 --output=D:/Isaac/validation/bc-eval
+```
+
+2026-11-03 实跑（held-out 种子，4 场景 × 900 帧）：随机 4 死/122 输出，未训练 Actor 3 死/65 输出，BC 2–3 死/319 输出，MPC 1 死/519 输出；BC 射击方向准确率 0.85，移动只有 ~0.40。结论：BC 已不是随机策略，但还打不过 MPC，**不替换、不接实机**，只作为 PPO 初始化。训练两次的 best-policy 哈希完全相同，闭环评估重复结果一致。完整数据与逐场景对照见 [Phase 2 报告](D:/Isaac/validation/BC-PHASE2-20261103.md)。
+
+DAgger 采集用 `scripts/collect_dagger.mjs`：让当前策略跑引擎，在它访问到的状态上查询 MPC 并输出同格式数据集（`--policy=` / `--scenes=` / `--seeds=` / `--frames=`）。实测两轮把 BC↔MPC 一致率从 5.0% 提到 9.7%，但只改善了训练种子上的表现；按闭环验证集选择，最佳模型仍是 `bc-balanced-20261103`（val 1 死/13 掉血/308 输出，held-out 2 死/19 掉血/319 输出）。DAgger 的下一步必须多训练种子并保留更高比例专家状态，不能再单种子加轮数。
+
+## PPO 微调（Phase 3）
+
+`scripts/train_ppo_from_bc.mjs` 从 BC 权重继续 PPO（复用 `PPOTrainer`/GAE/Adam/断点续训，不重新初始化），奖励由 `scripts/lib/shaped_environment.mjs` 包装环境生成：真实敌人 HP 下降 +1/HP、真实掉血 −8/半心、清房 +40、死亡 −40、时间 −0.002/帧、连续 120 帧无伤害后 −0.02/帧、空动作 −0.01/次。
+
+```powershell
+node .\scripts\train_ppo_from_bc.mjs --policy=D:/Isaac/validation/bc-balanced-20261103/best-policy.json `
+  --iterations=12 --rollout-steps=1024 --seeds='3JY1 6FLR' --output=D:/Isaac/validation/ppo-from-bc-20261103
+```
+
+2026-11-03 实跑 12,288 帧/12 迭代：15 回合 0 清房 14 死亡，熵 2.06–2.39，critic 解释方差 −0.089–0.025。验证集（7W3L）：BC 1 死/13 掉血/308 输出，PPO best 2 死/21/332，PPO latest 3 死/23/307，MPC 0 死/7/656。**PPO 没有改进，按纪律不替换 BC，也不接实机**；断点续训已验证（恢复后从第 13 次迭代继续）。完整记录见 [Phase 3 报告](D:/Isaac/validation/PPO-PHASE3-20261103.md)。
+
 ## Cross-process Forks
 
 Given a reset environment `base` and its `snapshot`, prewarm worker processes once and import the exported base snapshot into them:

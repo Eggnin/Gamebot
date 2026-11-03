@@ -188,6 +188,7 @@ export class PPOTrainer {
     this.bestMeanEpisodeReward = null;
     this.episodeReturn = 0;
     this.episodeStats = null;
+    this.lastAction = null;
   }
 
   #validateConfig() {
@@ -211,6 +212,7 @@ export class PPOTrainer {
     if (!this.observation) {
       this.observation = await this.environment.reset(this.#episodeResetOptions());
       this.episodeStats = newEpisodeStats();
+      this.lastAction = null;
     }
   }
 
@@ -238,13 +240,15 @@ export class PPOTrainer {
 
     for (let index = 0; index < this.config.rolloutSteps; index++) {
       const observation = this.observation;
-      const decision = this.policy.act(observation);
+      const context = this.lastAction;
+      const decision = this.policy.act(observation, { context });
       const result = await this.environment.step(decision.action);
       const terminated = result.terminated === true;
       const truncated = result.truncated === true;
       // Bootstrapping is disabled only for a real terminal state. Time-limit
       // truncation still uses V(last observation) in the GAE TD residual.
-      const nextValue = terminated ? 0 : this.policy.forward(result.observation).value;
+      const nextValue = terminated ? 0
+        : this.policy.forward(result.observation, { context: decision.action }).value;
       const reward = finite(result.reward, 'environment reward');
       const dealt = finite(result.info?.enemyDamage ?? 0, 'enemyDamage');
       const taken = finite(result.info?.healthUnitLost ?? 0, 'healthUnitLost');
@@ -262,6 +266,7 @@ export class PPOTrainer {
         truncated,
       });
       this.observation = result.observation;
+      this.lastAction = decision.action;
       this.episodeReturn += reward;
       this.episodeStats.reward += reward;
       this.episodeStats.damageDealt += dealt;
@@ -309,6 +314,7 @@ export class PPOTrainer {
         this.episodeStats = null;
         this.observation = await this.environment.reset(this.#episodeResetOptions());
         this.episodeStats = newEpisodeStats();
+        this.lastAction = null;
       }
     }
 
@@ -465,6 +471,7 @@ export class PPOTrainer {
     this.episodeReturn = 0;
     this.episodeStats = null;
     this.observation = null;
+    this.lastAction = null;
     return {
       iteration: this.iteration,
       globalSteps: this.globalSteps,
